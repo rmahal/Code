@@ -13,7 +13,7 @@ int main( int num, char* args[])
 	int count = 0;
 	char input[1];					// read characters into here
 	int linenum = 1;				// another counter
-	char holder[1000];	
+	char buffer[1000];	
 
 
 
