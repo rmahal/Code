@@ -1,0 +1,102 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+int main( int num, char* args[])
+{
+	int n = 0;  					// some flags
+	int E = 0;  					// some flags
+	int T = 0;  					// some flags
+	int i = 0;					// a counter
+	int fd = 0;					// a counter
+	int count = 0;
+	char input[1];					// read characters into here
+	int linenum = 1;				// another counter
+	char holder[1000];	
+
+
+
+	// process the args
+	if ( num == 1 )
+	{
+		count = sprintf(buffer, “usage: %s [options] [file]\n", args[0] );
+		write(1,buffer,count);
+		exit(1);
+	}
+
+	if ( num == 3 )  // we've got some switches
+	{
+		while ( args[1][i] != '\0' )
+		{
+			switch ( args[1][i] )
+			{
+				case 'n':
+					n = 1;
+				break;
+				case 'E':
+					E = 1;
+				break;
+				case 'T':
+					T = 1;
+				break;
+			} // end switch
+			
+			i++;
+		} // end while
+	} // end if
+	
+
+
+	
+	fd = open( args[num-1], O_RDONLY ); 		// attempt to open the file
+
+
+
+	
+	if ( fd == -1 )					// verify file opened
+	{
+		count = sprintf(buffer, “Error opening file: %s\n", args[num-1] );
+		write(1,buffer,count);
+		exit(1);
+	}
+	
+	if ( n ) {
+		
+		count = sprintf(buffer, “%4d:  ", linenum++ );
+		write(1,buffer, count);
+	}
+	
+
+
+
+	while ( read(fd, input,1) == 1 )
+	{
+		if ( input[0] == '\n' && E && n )
+		{
+			count = sprintf(buffer, “$\n%4d:  ", linenum++ );
+			write(1,buffer, count);
+		}
+		else if ( input[0] == '\n' && E )
+		{
+			write(1,“$\n”,2);
+		}
+		else if ( input[0] == '\t' && T )
+		{
+			write(1,”^T”,2);
+		}
+		else if ( input[0] == '\n' && n )
+		{
+			count = sprintf(buffer, “\n%4d:  ", linenum++ );
+			write(1,buffer, count);
+		}
+		else
+		{
+			write(1,input,1);
+		}
+	}
+	
+	close( fd );
+
+	return 0;
+}
